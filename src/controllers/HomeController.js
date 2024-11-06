@@ -89,18 +89,26 @@ function handleMessage(sender_psid, received_message) {
     // Send the response message
     callSendAPI(sender_psid, response);
 }
-function handlePostBack(sender_psid, received_postback) {
+function handlePostback(sender_psid, received_postback) {
     let response;
 
     // Get the payload for the postback
     let payload = received_postback.payload;
-
-    // Set the response based on the postback payload
-    if (payload === 'yes') {
-        response = { "text": "Thanks!" }
-    } else if (payload === 'no') {
-        response = { "text": "Oops, try sending another image." }
+    switch (payload) {
+        case 'yes':
+            response = { "text": "Thanks!" }
+            break;
+        case 'no':
+            response = { "text": "Oops, try sending another image." }
+            break;
+        case 'GET_STARTED':
+            response = { "text": "Ok xin chao bạn abcxyz đến với nhà hàng" }
+            break;
+        default:
+            response = { "text": "I don't know response with postback" }
     }
+    // Set the response based on the postback payload
+
     // Send the message to acknowledge the postback
     callSendAPI(sender_psid, response);
 }
@@ -127,14 +135,14 @@ function callSendAPI(sender_psid, response) {
         }
     });
 }
-let setupProfile = (req, res) => {
+let setupProfile = async (req, res) => {
     let request_body = {
         "get_started": { "payload": "GET_STARTED" },
         "whitelisted_domains": ['https://chatbox-0983.onrender.com']
     }
 
     // Send the HTTP request to the Messenger Platform
-    request({
+    await request({
         "uri": `https://graph.facebook.com/v21.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
         "qs": { "access_token": PAGE_ACCESS_TOKEN },
         "method": "POST",
@@ -146,5 +154,6 @@ let setupProfile = (req, res) => {
             console.error("Unable to send message:" + err);
         }
     });
+    return res.send('setup profile succeeded')
 }
 module.exports = { getHomePage, getWebhook, postWebhook, setupProfile }
