@@ -102,6 +102,7 @@ async function handlePostback(sender_psid, received_postback) {
         case 'no':
             response = { "text": "Oops, try sending another image." }
             break;
+        case 'RESTART_BOT':
         case 'GET_STARTED':
             await chatbotService.handleGetStarted(sender_psid)
             break;
@@ -157,4 +158,48 @@ let setupProfile = async (req, res) => {
     });
     return res.send('setup profile succeeded')
 }
-module.exports = { getHomePage, getWebhook, postWebhook, setupProfile }
+let setupPersistentMenu = async (req, res) => {
+    let request_body = {
+        "psid": "<PSID>",
+        "persistent_menu": [
+            {
+                "locale": "default",
+                "composer_input_disabled": false,
+                "call_to_actions": [
+                    {
+                        "type": "postback",
+                        "title": "Thông tin nhà hàng",
+                        "payload": "VIEW_YOUTUBE_CHANNEL"
+                    },
+                    {
+                        "type": "web_url",
+                        "title": "Báo chí nói gì về nhà hàng chúng tôi",
+                        "url": "https://www.tuoitre.vn",
+                        "webview_height_ratio": "full"
+                    },
+                    {
+                        "type": "postback",
+                        "title": "Khởi động lại chat box",
+                        "payload": "RESTART_BOT"
+                    }
+                ]
+            }
+        ]
+    }
+
+    // Send the HTTP request to the Messenger Platform
+    await request({
+        "uri": `https://graph.facebook.com/v21.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
+        "qs": { "access_token": PAGE_ACCESS_TOKEN },
+        "method": "POST",
+        "json": request_body
+    }, (err, res, body) => {
+        if (!err) {
+            console.log('set up menu succeeded')
+        } else {
+            console.error("Unable to send message:" + err);
+        }
+    });
+    return res.send('setup profile succeeded')
+}
+module.exports = { getHomePage, getWebhook, postWebhook, setupProfile, setupPersistentMenu }

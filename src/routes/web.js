@@ -6,6 +6,8 @@ let initWebRoutes = (app) => {
     route.post('/webhook', HomeController.postWebhook)
     route.get('/webhook', HomeController.getWebhook)
     route.post('/setup-profile', HomeController.setupProfile)
+
+    route.post('/setup-persistent-menu', HomeController.setupPersistentMenu)
     return app.use("/", route)
 }
 module.exports = initWebRoutes;
