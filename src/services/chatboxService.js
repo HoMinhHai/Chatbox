@@ -45,7 +45,7 @@ let handleGetStarted = (sender_psid) => {
     return new Promise(async (resolve, reject) => {
         try {
             let username = await getUserName(sender_psid)
-            let response1 = { "text": `Xin chao bạn ${username} đến với nhà hàng` }
+            let response1 = { "text": `Xin chào bạn ${username} đến với nhà hàng` }
             let response2 = sendGetStartedTemplate()
             await callSendAPI(sender_psid, response1)
 

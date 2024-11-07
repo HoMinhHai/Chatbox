@@ -160,11 +160,10 @@ let setupProfile = async (req, res) => {
 }
 let setupPersistentMenu = async (req, res) => {
     let request_body = {
-        "psid": "<PSID>",
         "persistent_menu": [
             {
                 "locale": "default",
-                "composer_input_disabled": false,
+                "composer_input_disabled": true,
                 "call_to_actions": [
                     {
                         "type": "postback",
@@ -188,18 +187,29 @@ let setupPersistentMenu = async (req, res) => {
     }
 
     // Send the HTTP request to the Messenger Platform
-    await request({
-        "uri": `https://graph.facebook.com/v21.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
-        "qs": { "access_token": PAGE_ACCESS_TOKEN },
-        "method": "POST",
-        "json": request_body
-    }, (err, res, body) => {
-        if (!err) {
-            console.log('set up menu succeeded')
-        } else {
-            console.error("Unable to send message:" + err);
-        }
-    });
-    return res.send('setup profile succeeded')
+    // await request({
+    //     "uri": `https://graph.facebook.com/v21.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
+    //     "method": "POST",
+    //     "json": request_body
+    // }, (err, res, body) => {
+    //     if (!err) {
+    //         console.log('set up menu succeeded')
+    //     } else {
+    //         console.error("Unable to send message:" + err);
+    //     }
+    // });
+    // return res.send('setup menu succeeded')
+    try {
+        request({
+            "uri": `https://graph.facebook.com/v21.0/me/messenger_profile?access_token=${PAGE_ACCESS_TOKEN}`,
+            "method": "POST",
+            "json": request_body
+        });
+        console.log('Set up menu succeeded');
+        return res.send('Setup menu succeeded');
+    } catch (err) {
+        console.error("Unable to send message:" + err);
+        return res.status(500).send('Setup menu failed');
+    }
 }
 module.exports = { getHomePage, getWebhook, postWebhook, setupProfile, setupPersistentMenu }
